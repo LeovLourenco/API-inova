@@ -10,7 +10,10 @@ app.use(bodyParser.json());
 
 // Configuração do banco PostgreSQL (Render)
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL // defina isso no ambiente do Render
+  connectionString: process.env.DATABASE_URL, // defina isso no ambiente do Render
+  ssl: {
+    rejectUnauthorized: false,
+   }, 
 });
 
 // Endpoint principal: recebe corretora_id e produto_id
