@@ -18,6 +18,8 @@ const pool = new Pool({
 
 // Endpoint principal: recebe corretora_id e produto_id
 app.post('/api/seguradoras-disponiveis', async (req, res) => {
+  console.log("Recebido do Pipefy:", req.body);
+  
   const { corretora_id, produto_id } = req.body;
 
   if (!corretora_id || !produto_id) {
