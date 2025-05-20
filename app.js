@@ -41,6 +41,10 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('API INOVA está no ar!');
+});
+
 // Inicializa o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
