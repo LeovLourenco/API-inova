@@ -15,15 +15,14 @@ const pool = new Pool({
     rejectUnauthorized: false,
    }, 
 });
-
-// Endpoint principal: recebe corretora_id e produto_id
+// endpoint principal
 app.post('/api/seguradoras-disponiveis', async (req, res) => {
   console.log("Recebido do Pipefy:", req.body);
-  
-  const { corretora_id, produto_id } = req.body;
 
-  if (!corretora_id || !produto_id) {
-    return res.status(400).json({ error: 'corretora_id e produto_id são obrigatórios.' });
+  const { corretora_nome, produto_nome } = req.body;
+
+  if (!corretora_nome || !produto_nome) {
+    return res.status(400).json({ error: 'corretora_nome e produto_nome são obrigatórios.' });
   }
 
   try {
@@ -32,22 +31,15 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
       FROM seguradoras s
       JOIN corretora_seguradora cs ON s.id = cs.seguradora_id
       JOIN seguradora_produto sp ON s.id = sp.seguradora_id
-      WHERE cs.corretora_id = $1 AND sp.produto_id = $2
+      JOIN corretoras c ON cs.corretora_id = c.id
+      JOIN produtos p ON sp.produto_id = p.id
+      WHERE c.nome = $1 AND p.nome = $2
     `;
 
-    const { rows } = await pool.query(query, [corretora_id, produto_id]);
+    const { rows } = await pool.query(query, [corretora_nome, produto_nome]);
     res.json(rows);
   } catch (err) {
     console.error('Erro na consulta:', err);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
-});
-
-app.get('/', (req, res) => {
-  res.send('API INOVA está no ar!');
-});
-
-// Inicializa o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
 });
