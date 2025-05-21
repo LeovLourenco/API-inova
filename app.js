@@ -22,7 +22,7 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
   const { corretora_nome, produto_nome } = req.body;
 
   if (!corretora_nome || !produto_nome) {
-    return res.status(400).json({ error: 'corretora_nome e produto_nome são obrigatórios.' });
+    return res.status(400).send('corretora_nome e produto_nome são obrigatórios.');
   }
 
   try {
@@ -37,12 +37,21 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
     `;
 
     const { rows } = await pool.query(query, [corretora_nome, produto_nome]);
-    res.json(rows);
+
+    if (rows.length === 0) {
+      return res.send("Nenhuma seguradora disponível para essa corretora e produto.");
+    }
+
+    const nomes = rows.map(r => r.nome);
+    const resposta = `Seguradoras elegíveis:\n- ${nomes.join('\n- ')}`;
+    res.send(resposta);
+
   } catch (err) {
     console.error('Erro na consulta:', err);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    res.status(500).send('Erro interno do servidor');
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
