@@ -43,3 +43,7 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
