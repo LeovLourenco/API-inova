@@ -27,7 +27,7 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
 
   try {
     const query = `
-      SELECT s.id, s.nome
+      SELECT s.nome
       FROM seguradoras s
       JOIN corretora_seguradora cs ON s.id = cs.seguradora_id
       JOIN seguradora_produto sp ON s.id = sp.seguradora_id
@@ -38,18 +38,20 @@ app.post('/api/seguradoras-disponiveis', async (req, res) => {
 
     const { rows } = await pool.query(query, [corretora_nome, produto_nome]);
 
-    if (rows.length === 0) {
-      return res.json({ seguradoras: [] });
-    }
-
     const nomes = rows.map(r => r.nome);
-    res.json({ seguradoras: nomes }); //atualizando a resposta
+
+    const listaSeguradoras = nomes.length
+      ? nomes.join(', ')
+      : 'Nenhuma seguradora disponível para essa corretora e produto.';
+
+    res.json({ seguradoras: listaSeguradoras });
 
   } catch (err) {
     console.error('Erro na consulta:', err);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 
 app.listen(port, () => {
